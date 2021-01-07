@@ -3,8 +3,27 @@ import _ from 'lodash';
 export const fetchPostsAndUsers = () =>{
     return async function(dispatch,getState){
         console.log("About to fetch posts")
-        await(dispatch(fetchPosts));
+        await(dispatch(fetchPosts()));
+        const userIds = _.uniq(_.map(getState().posts,"userId"));
+        // if some other api call depends on fecth user 
+        // we have to use async and await
+        // async await doesnt work with with foreach ,,,
+        //  thus we use map at that time then do promise.all
+        userIds.forEach(id=>dispatch(fetchUser(id)))
+        // console.log(getState().posts)
+        // console.log(userIds)
         console.log("Fetched posts")
+
+
+        // we can use lodash chain function
+        // whatever arguement is passed to chain function
+        // becomes the first arguemnt of the next chained function
+        // value() is called to execute the function
+        // _.chain(getState().posts)
+        // .map('userId')
+        // .uniq()
+        // .forEach(id=>dispatch(fetchUser(id)))
+        // .value();
     }
 }
 export const fetchPosts =  () =>{
